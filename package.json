@@ -1,0 +1,25 @@
+{
+  "name": "tankmonitor",
+  "version": "0.0.1",
+  "description": "A quarantine tank monitor",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "engines": {
+    "node": "6.x"
+  },
+  "dependencies": {
+    "plivo": "0.4.2",
+    "pigpio": "0.6.4"
+  },
+  "keywords": [
+    "node",
+    "quarantine",
+    "koi"
+  ],
+  "author": "Zac Feuerborn",
+  "contributors": [
+  ],
+  "license": "MIT"
+}

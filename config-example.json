@@ -1,7 +1,9 @@
 {
   "carrier": "verizon",
   "notify": {
-    "waterLevel": [],
+    "waterLevel": [
+      "555555555"
+    ],
     "temperature": []
   }
 

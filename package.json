@@ -2,6 +2,10 @@
   "name": "tankmonitor",
   "version": "0.0.1",
   "description": "A quarantine tank monitor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/risingfish/tankmonitor"
+  },
   "main": "main.js",
   "scripts": {
     "start": "node main.js"
@@ -10,7 +14,6 @@
     "node": "6.x"
   },
   "dependencies": {
-    "plivo": "0.4.2",
     "pigpio": "0.6.4"
   },
   "keywords": [

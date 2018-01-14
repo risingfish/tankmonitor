@@ -1,15 +1,25 @@
-var Gpio = require('pigpio').Gpio; //include onoff to interact with the GPIO
-var floatSensor = new Gpio(17, {mode: Gpio.INPUT, pullUpDown: Gpio.PUD_DOWN, edge: Gpio.EITHER_EDGE});
+var Email = require('./src/Email.js');
+var FloatSensor = require('./src/FloatSensor.js');
 
-var readInterval = setInterval(readFloat, 1000);
+var outputFloatLevel = function (output) {
+    var timestamp = new Date();
+    console.log(timestamp.toString() + " " + output);
 
-function readFloat() { //function to start blinking
-    console.log(floatSensor.digitalRead());
-}
+    if (output > 0) {
+        var email = new Email();
+        email.sendEmail('', "Water levels are low!", Email.CARRIER_VERIZON)
+    }
+};
 
-function endRead() { //function to stop blinking
-    clearInterval(readInterval); // Stop blink intervals
-    floatSensor.unexport(); // Unexport GPIO to free resources
-}
+var waterLevel = new FloatSensor({
+    "pin": 17,
+    "readInterval": 1000,
+    "floatRead": outputFloatLevel
+});
 
-setTimeout(endRead, 20000); //stop blinking after 5 seconds
+
+waterLevel.start();
+
+setTimeout(function () {
+    waterLevel.stop();
+}, 60000); //stop reading after 60 seconds

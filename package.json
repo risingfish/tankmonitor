@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "pigpio": "0.6.4",
-    "nodemailer": "4.4.1"
+    "nodemailer": "4.4.1",
+    "moment": "2.20.1"
   },
   "keywords": [
     "node",

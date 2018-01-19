@@ -19,7 +19,7 @@ var FloatSensor = function (config) {
     this.stop = function () {
         clearInterval(readInterval); // Clear read interval
     };
-}
+};
 
 module.exports = FloatSensor;
 

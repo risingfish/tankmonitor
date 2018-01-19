@@ -5,6 +5,9 @@
       "555555555"
     ],
     "temperature": []
-  }
-
+  },
+  "messages": {
+    "waterLevel": "The pond water level is low!"
+  },
+  "dev": true // If this is present, SMS messages will not be sent. Delete this line to send SMS.
 }

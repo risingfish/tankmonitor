@@ -61,17 +61,18 @@ var Email = function(config) {
             throw new Error('Invalid SMS number.');
         }
 
+        // Setup the nodemailer object to point to the mail relay
         transporter = nodemailer.createTransport({
-            host: 'homestor',
-            port: 25,
-            secure: false // true for 465, false for other ports
+            host: conf.hostname,
+            port: conf.port,
+            secure: conf.secure // true for 465, false for other ports
         });
 
         mailOptions = {
-            from: '"Zac" <risingfish@gmail.com>', // sender address
+            from: conf.senderAddress, // sender address
             to: smsRecipients, // list of receivers
             subject: '', // Subject line
-            text: 'The quarantine tank is low! Please check the water levels!' // plain text body
+            text: message // plain text body
         };
 
         transporter.sendMail(mailOptions, function (error, info) {

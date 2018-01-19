@@ -10,17 +10,19 @@ var outputFloatLevel = function (output) {
     console.log(timestamp.format('YYYY/MM/DD hh:mm:ss a') + " " + output);
 
     if (output > 0) {
+        // Lets check to see if we sent an SMS in the last minute. If we have we should hold off for a while.
         if (lastSMS === null || lastSMS.isAfter(timestamp.add('1', 'm'))) {
-            var email = new Email(config);
+            var email = new Email(config.mailRelay);
 
+            // If we're running in dev mode, don't actually send the SMS
             if (config.dev) {
-                console.log('would of sent email to ')
+                console.log('Would of sent email to', config.notify.waterLevel)
             } else {
-
-                if (!config.notify.waterLevel) {
-                    throw new Error("No waterLevel contacts to notify")
+                // If we don't have SMS recipients setup, we throw an error. This isn't much good without them!
+                if (!config.notify.waterLevel || !config.messages.waterLevel) {
+                    throw new Error("No waterLevel contacts to notify or no message to send!")
                 } else {
-                    email.sendEmail(config.notify.waterLevel, "Water levels are low!");
+                    email.sendEmail(config.notify.waterLevel, config.messages.waterLevel);
                 }
 
             }
@@ -32,13 +34,14 @@ var outputFloatLevel = function (output) {
     }
 };
 
+// Configure the RPi GPIO to read the correct pin for the float sensor.
 var waterLevel = new FloatSensor({
-    "pin": 17,
-    "readInterval": 1000,
+    "pin": config.sensors.waterLevel.pin,
+    "readInterval": config.sensors.waterLevel.readInterval,
     "floatRead": outputFloatLevel
 });
 
-
+// Begin polling the float sensor
 waterLevel.start();
 
 process.on('SIGINT', function() {

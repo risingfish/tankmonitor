@@ -1,11 +1,10 @@
-var Rpio = require('rpio'); //include pigpio to interact with the GPIO
+var Rpio = require('rpio'); //include rpio library
 
 Rpio.init({mapping: 'gpio'});
 
 var FloatSensor = function (config) {
     var conf = config;
     //var floatSensor = new Gpio(conf.pin, {mode: Gpio.INPUT, pullUpDown: Gpio.PUD_DOWN, edge: Gpio.EITHER_EDGE});
-    Rpio.open(conf.pin, Rpio.INPUT, Rpio.PULL_DOWN);
     var readInterval = null;
 
 
@@ -15,12 +14,14 @@ var FloatSensor = function (config) {
     }
 
     this.start = function () {
+        Rpio.open(conf.pin, Rpio.INPUT, Rpio.PULL_DOWN);
         readInterval = setInterval(readFloat, conf.readInterval);
     };
 
 
     this.stop = function () {
         clearInterval(readInterval); // Clear read interval
+        Rpio.close(conf.pin);
     };
 };
 

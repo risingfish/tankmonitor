@@ -16,7 +16,7 @@ var outputFloatLevel = function (output) {
 
             // If we're running in dev mode, don't actually send the SMS
             if (config.dev) {
-                console.log('Would of sent email to', config.notify.waterLevel)
+                console.log('Would of sent email to' + config.notify.waterLevel.length + " contacts")
             } else {
                 // If we don't have SMS recipients setup, we throw an error. This isn't much good without them!
                 if (!config.notify.waterLevel || !config.messages.waterLevel) {
@@ -52,4 +52,4 @@ process.on('SIGINT', function() {
 setTimeout(function () {
     waterLevel.stop();
     process.exit();
-}, 60000); //stop reading after 60 seconds
+}, 6000000); //stop reading after 60 seconds

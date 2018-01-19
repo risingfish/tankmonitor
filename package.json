@@ -16,7 +16,8 @@
   "dependencies": {
     "pigpio": "0.6.4",
     "nodemailer": "4.4.1",
-    "moment": "2.20.1"
+    "moment": "2.20.1",
+    "rpio": "0.9.20 "
   },
   "keywords": [
     "node",

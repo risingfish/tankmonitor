@@ -9,5 +9,17 @@
   "messages": {
     "waterLevel": "The pond water level is low!"
   },
+  "sensors": {
+    "waterLevel": {
+      "pin": 17,
+      "readInterval": 1000
+    }
+  },
+  "mailRelay": {
+    "hostname": "YOUR_MAIL_RELAY_HOST",
+    "port": 25,
+    "secure": false,
+    "senderAddress": "\"YOUR_NAME\" <EMAIL_ADDRESS>"
+  },
   "dev": true // If this is present, SMS messages will not be sent. Delete this line to send SMS.
 }

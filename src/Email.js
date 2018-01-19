@@ -57,27 +57,28 @@ var Email = function(config) {
             throw new Error('Invalid SMS number.');
         }
 
+        // If there were no recipients, throw an error.
         if (smsRecipients.length === 0) {
             throw new Error('Invalid SMS number.');
         }
 
         // Setup the nodemailer object to point to the mail relay
         transporter = nodemailer.createTransport({
-            host: conf.hostname,
-            port: conf.port,
-            secure: conf.secure // true for 465, false for other ports
+            'host': conf.hostname,
+            'port': conf.port,
+            'secure': conf.secure // true for 465, false for other ports
         });
 
         mailOptions = {
-            from: conf.senderAddress, // sender address
-            to: smsRecipients, // list of receivers
-            subject: '', // Subject line
-            text: message // plain text body
+            'from': conf.senderAddress, // sender address
+            'to': smsRecipients, // list of receivers
+            'subject': '', // Subject line
+            'text': message // plain text body
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                return console.log(error);
+                return console.error(error);
             }
             console.log('Message sent: %s', info.messageId);
             // Preview only available when sending through an Ethereal account

@@ -12,7 +12,12 @@
   "sensors": {
     "waterLevel": {
       "pin": 17,
-      "readInterval": 1000
+      "readInterval": 1000,
+      "handleRead": "function () {}"
+    },
+    "temperature": {
+      "readInterval": 1000,
+      "handleRead": "function () {}"
     }
   },
   "mailRelay": {

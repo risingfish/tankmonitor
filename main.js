@@ -1,11 +1,12 @@
 var Email = require('./src/Email.js');
 var FloatSensor = require('./src/FloatSensor.js');
+var TemperatureSensor = require('./src/TemperatureSensor.js');
 var moment = require('moment');
 
 var config = require('./config.json');
 var lastSMS = null;
 
-var outputFloatLevel = function (output) {
+var handleFloatRead = function (output) {
     var timestamp = moment();
     console.log(timestamp.format('YYYY/MM/DD hh:mm:ss a') + " " + output);
 
@@ -34,18 +35,31 @@ var outputFloatLevel = function (output) {
     }
 };
 
+var handleTempRead = function (output) {
+    console.log(output);
+};
+
 // Configure the RPi GPIO to read the correct pin for the float sensor.
 var waterLevel = new FloatSensor({
     "pin": config.sensors.waterLevel.pin,
     "readInterval": config.sensors.waterLevel.readInterval,
-    "floatRead": outputFloatLevel
+    "handleRead": handleFloatRead
+});
+
+var tempSensor = new TemperatureSensor({
+    "readInterval": config.sensors.waterLevel.readInterval,
+    "handleRead": handleTempRead
 });
 
 // Begin polling the float sensor
-waterLevel.start();
+//waterLevel.start();
+
+tempSensor.start();
+//waterLevel.start();
 
 process.on('SIGINT', function() {
     console.log("\nCaught interrupt signal");
+    waterLevel.stop();
     process.exit();
 });
 

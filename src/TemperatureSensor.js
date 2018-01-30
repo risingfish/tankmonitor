@@ -1,29 +1,25 @@
 var Rpio = require('rpio'); //include rpio library
+var DS18B20 = require('ds18b20-raspi'); //include rpio library
 
-Rpio.init({mapping: 'gpio'});
-
-var FloatSensor = function (config) {
+var TemperatureSensor = function (config) {
     var conf = config;
     //var floatSensor = new Gpio(conf.pin, {mode: Gpio.INPUT, pullUpDown: Gpio.PUD_DOWN, edge: Gpio.EITHER_EDGE});
     var readInterval = null;
 
-
-    function readFloat() { //function to start reading
-        var callback = conf.handleRead || $.noop;
-        callback(Rpio.read(conf.pin));
+    function readFloat(readSensor) { //function to start reading
+        var callback = conf.handleRead || function () {};
+        callback(DS18B20.readSimpleF());
     }
 
     this.start = function () {
-        Rpio.open(conf.pin, Rpio.INPUT, Rpio.PULL_DOWN);
         readInterval = setInterval(readFloat, conf.readInterval);
     };
 
 
     this.stop = function () {
         clearInterval(readInterval); // Clear read interval
-        Rpio.close(conf.pin);
     };
 };
 
-module.exports = FloatSensor;
+module.exports = TemperatureSensor;
 

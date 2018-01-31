@@ -1,4 +1,5 @@
-const DS18B20 = require('ds18b20-raspi'); //include rpio library
+const DS18B20 = require('ds18b20-raspi');
+const moment = require('moment');
 
 const TemperatureSensor = function (config) {
     const conf = config;
@@ -12,6 +13,7 @@ const TemperatureSensor = function (config) {
         const json_output = {
             'type': 'temperature',
             'time': moment().format('YYYY/MM/DD hh:mm:ss a'),
+            'unit': 'f',
             'data': output
         };
         const callback = conf.handleRead || function () {};

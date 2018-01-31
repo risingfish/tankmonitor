@@ -1,15 +1,19 @@
 const Email = require('./src/Email.js');
 const FloatSensor = require('./src/FloatSensor.js');
 const TemperatureSensor = require('./src/TemperatureSensor.js');
+const LogDataToFile = require('./src/LogDataToFile.js');
 
 const TankMonitor = function (conf) {
     const config = conf;
     const email = new Email(config.mailRelay);
+    const logOutput = new LogDataToFile(conf.dataHandling);
+    let storedData = {};
     let waterLevel, tempSensor, runTimer;
 
 
-    const handleTempRead = (output) => {
-        console.log(output);
+    const handleReadOutput = (output) => {
+        storedData[output.type] = output;
+        logOutput.write(storedData);
     };
 
     /**
@@ -30,7 +34,8 @@ const TankMonitor = function (conf) {
         waterLevel = new FloatSensor({
             "pin": config.sensors.waterLevel.pin,
             "readInterval": config.sensors.waterLevel.readInterval,
-            'emailProvider': email
+            "emailProvider": email,
+            "handleRead": handleReadOutput
         });
     };
 
@@ -40,7 +45,7 @@ const TankMonitor = function (conf) {
     const configTempSensor = () => {
         tempSensor = new TemperatureSensor({
             "readInterval": config.sensors.waterLevel.readInterval,
-            "handleRead": handleTempRead
+            "handleRead": handleReadOutput
         });
     };
 

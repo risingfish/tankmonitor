@@ -19,7 +19,8 @@ const FloatSensor = function (config) {
             'time': moment().format('YYYY/MM/DD hh:mm:ss a'),
             'data': output
         };
-        const callback = conf.handleRead || handleFloatRead;
+        const callback = conf.handleRead || function (){};
+        handleFloatRead(json_output);
         callback(json_output);
     };
 
@@ -45,8 +46,6 @@ const FloatSensor = function (config) {
      * @param output
      */
     const handleFloatRead = (output) => {
-        console.log(output);
-
         if (output > 0) {
             // Lets check to see if we sent an SMS in the last minute. If we have we should hold off for a while.
             if (lastSMS === null || lastSMS.isAfter(timestamp.add('1', 'm'))) {

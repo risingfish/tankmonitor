@@ -26,5 +26,10 @@
     "secure": false,
     "senderAddress": "\"YOUR_NAME\" <EMAIL_ADDRESS>"
   },
+  "dataHandling": {
+    "dataFilePath": "URL", // Path to write dataFileName into
+    "dataFileName": "FILENAME", // dataFileName file name
+    "append": false
+  },
   "dev": true // If this is present, SMS messages will not be sent. Delete this line to send SMS.
 }

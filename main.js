@@ -1,69 +1,84 @@
-var Email = require('./src/Email.js');
-var FloatSensor = require('./src/FloatSensor.js');
-var TemperatureSensor = require('./src/TemperatureSensor.js');
-var moment = require('moment');
+const Email = require('./src/Email.js');
+const FloatSensor = require('./src/FloatSensor.js');
+const TemperatureSensor = require('./src/TemperatureSensor.js');
 
-var config = require('./config.json');
-var lastSMS = null;
+const TankMonitor = function (conf) {
+    const config = conf;
+    const email = new Email(config.mailRelay);
+    let waterLevel, tempSensor, runTimer;
 
-var handleFloatRead = function (output) {
-    var timestamp = moment();
-    console.log(timestamp.format('YYYY/MM/DD hh:mm:ss a') + " " + output);
 
-    if (output > 0) {
-        // Lets check to see if we sent an SMS in the last minute. If we have we should hold off for a while.
-        if (lastSMS === null || lastSMS.isAfter(timestamp.add('1', 'm'))) {
-            var email = new Email(config.mailRelay);
+    const handleTempRead = (output) => {
+        console.log(output);
+    };
 
-            // If we're running in dev mode, don't actually send the SMS
-            if (config.dev) {
-                console.log('Would of sent email to' + config.notify.waterLevel.length + " contacts")
-            } else {
-                // If we don't have SMS recipients setup, we throw an error. This isn't much good without them!
-                if (!config.notify.waterLevel || !config.messages.waterLevel) {
-                    throw new Error("No waterLevel contacts to notify or no message to send!")
-                } else {
-                    email.sendEmail(config.notify.waterLevel, config.messages.waterLevel);
-                }
+    /**
+     * Configure the overall system stuff. Mainly just used to enable the SIGINT capturing for the time being.
+     */
+    const configSystem = () => {
+        process.on('SIGINT', () => {
+            console.log("\nCaught interrupt signal");
+            this.stop();
+            process.exit();
+        });
+    };
 
-            }
+    /**
+     * Configure the Float sensor. Reads from the stored configuration used to initialize this object.
+     */
+    const configWaterLevelSensor = () => {
+        waterLevel = new FloatSensor({
+            "pin": config.sensors.waterLevel.pin,
+            "readInterval": config.sensors.waterLevel.readInterval,
+            'emailProvider': email
+        });
+    };
 
-            lastSMS = moment();
-        } else {
-            console.log('Skipping SMS. Not enough time elapsed since last one');
+    /**
+     * Configure the Temperature sensor. Reads from the stored configuration used to initialize this object.
+     */
+    const configTempSensor = () => {
+        tempSensor = new TemperatureSensor({
+            "readInterval": config.sensors.waterLevel.readInterval,
+            "handleRead": handleTempRead
+        });
+    };
+
+
+    /**
+     * Initialization script that sets up the sensors this will read.
+     */
+    this.init = () => {
+        configSystem();
+        configWaterLevelSensor();
+        configTempSensor();
+    };
+
+
+    this.start = () => {
+        tempSensor.start();
+        waterLevel.start();
+
+        if (config.dev) {
+            runTimer = setTimeout(() => {
+                waterLevel.stop();
+                tempSensor.stop();
+                process.exit();
+            }, 60000); //stop reading after 60 minutes
         }
-    }
+    };
+
+    this.stop = () => {
+        tempSensor.stop();
+        waterLevel.stop();
+    };
+
 };
 
-var handleTempRead = function (output) {
-    console.log(output);
-};
+// Load config data
+var config = require('./config.json');
 
-// Configure the RPi GPIO to read the correct pin for the float sensor.
-var waterLevel = new FloatSensor({
-    "pin": config.sensors.waterLevel.pin,
-    "readInterval": config.sensors.waterLevel.readInterval,
-    "handleRead": handleFloatRead
-});
-
-var tempSensor = new TemperatureSensor({
-    "readInterval": config.sensors.waterLevel.readInterval,
-    "handleRead": handleTempRead
-});
-
-// Begin polling the float sensor
-//waterLevel.start();
-
-tempSensor.start();
-//waterLevel.start();
-
-process.on('SIGINT', function() {
-    console.log("\nCaught interrupt signal");
-    waterLevel.stop();
-    process.exit();
-});
-
-setTimeout(function () {
-    waterLevel.stop();
-    process.exit();
-}, 6000000); //stop reading after 60 seconds
+// Initialize the monitor and begin monitoring
+var monitor = new TankMonitor(config);
+monitor.init();
+monitor.start();

@@ -1,21 +1,33 @@
-var Rpio = require('rpio'); //include rpio library
-var DS18B20 = require('ds18b20-raspi'); //include rpio library
+const DS18B20 = require('ds18b20-raspi'); //include rpio library
 
-var TemperatureSensor = function (config) {
-    var conf = config;
-    //var floatSensor = new Gpio(conf.pin, {mode: Gpio.INPUT, pullUpDown: Gpio.PUD_DOWN, edge: Gpio.EITHER_EDGE});
-    var readInterval = null;
+const TemperatureSensor = function (config) {
+    const conf = config;
+    let readInterval = null;
 
-    function readFloat(readSensor) { //function to start reading
-        var callback = conf.handleRead || function () {};
-        callback(DS18B20.readSimpleF());
-    }
+    /**
+     * Wrapper method used to read data from the sensor and determine how to handle the resulting value.
+     */
+    const readFloat = () => {
+        const output = DS18B20.readSimpleF();
+        const json_output = {
+            'type': 'temperature',
+            'time': moment().format('YYYY/MM/DD hh:mm:ss a'),
+            'data': output
+        };
+        const callback = conf.handleRead || function () {};
+        callback(json_output);
+    };
 
+    /**
+     * Method used to start reading from the temperature sensor
+     */
     this.start = function () {
         readInterval = setInterval(readFloat, conf.readInterval);
     };
 
-
+    /**
+     * Method used ot stop reading from the temperature sensor
+     */
     this.stop = function () {
         clearInterval(readInterval); // Clear read interval
     };

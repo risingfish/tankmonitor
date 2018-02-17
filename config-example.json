@@ -13,7 +13,8 @@
     "waterLevel": {
       "pin": 17,
       "readInterval": 1000,
-      "handleRead": "function () {}"
+      "handleRead": "function () {}",
+      "usePulldown": false
     },
     "temperature": {
       "readInterval": 1000,

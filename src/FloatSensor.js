@@ -28,7 +28,11 @@ const FloatSensor = function (config) {
      * Start reading from the float sensor using the given config settings.
      */
     this.start = () => {
-        Rpio.open(conf.pin, Rpio.INPUT, Rpio.PULL_DOWN);
+        if (conf.usePulldown === true) {
+            Rpio.open(conf.pin, Rpio.INPUT, Rpio.PULL_DOWN);
+        } else {
+            Rpio.open(conf.pin, Rpio.INPUT);
+        }
         readInterval = setInterval(readFloat, conf.readInterval);
     };
 

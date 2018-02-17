@@ -35,7 +35,8 @@ const TankMonitor = function (conf) {
             "pin": config.sensors.waterLevel.pin,
             "readInterval": config.sensors.waterLevel.readInterval,
             "emailProvider": email,
-            "handleRead": handleReadOutput
+            "handleRead": handleReadOutput,
+            "usePulldown": config.sensors.waterLevel.usePulldown || false
         });
     };
 
